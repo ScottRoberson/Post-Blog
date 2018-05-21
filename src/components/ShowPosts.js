@@ -1,31 +1,50 @@
 import React from 'react';
 import {Card, CardHeader, CardTitle, CardText} from 'material-ui/Card';
 import RaisedButton from 'material-ui/RaisedButton';
-import PostEdit from './PostEdit';
+import TextField from 'material-ui/TextField';
 
 
 class ShowPosts extends React.Component {
   constructor(props) {
     super(props)
+    this.state= {
+      search:''
+    }
+    
     
   }
 
-  
-  removePost(postsHtml){
-    const newPosts= this.state.posts.filter(post=>{
-      return post !== postsHtml;
-    })
 
-    this.setState({
-      posts: [...newPosts]
-    })
+  deletePost = (id) => {
+    this.props.onDelete(id);
   }
-  
 
+  handleSearch(event){
+    this.setState({search: event.target.value})
+}
+
+ 
   render() {
-    const postsHtml = this.props.posts.map(elem => {
+
+    let filteredSearch= this.props.posts.filter(
+      (elem) => {
+        return elem.body.indexOf(this.state.search) !==-1;
+      }
+    );
+        
+    const postsHtml = filteredSearch.map(elem => {
       return (
+        
+          <div>
+          <div>
+          <TextField
+            hintText="Search"
+            value= {this.state.search}
+            onChange= {this.handleSearch.bind(this)}
+          />
+          </div>
         <div className="post">
+         
           <Card className="post-paper" >
             <CardHeader
               title={elem.title}
@@ -34,21 +53,25 @@ class ShowPosts extends React.Component {
            <CardText>
              {elem.body}
            </CardText>
-           <RaisedButton
-            onClick={(e)=> this.removePost(postsHtml)}
+                  
+          </Card>
+          <RaisedButton
+            onClick={() => this.deletePost(elem.id)}
             type="delete"
             secondary={true}
-            label="Delete"
-                    /> 
-          </Card>
+            label="Delete"/> 
         </div>
+          </div>
       )
     })
     return (
+      
       <div>
       {postsHtml}
       </div>
+      
     )
+    
   }
 }
 
